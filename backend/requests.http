@@ -2,7 +2,7 @@ GET http://localhost:3000/
 
 ###
 GET http://localhost:3000/tasks
-X-CSRF-Token: 8128d7a114302101847397ae3d5ac70c074b6223259c085dba7f73a70f69fa0a
+X-CSRF-Token: 882ed947fac1c82bf72ff12c3442a27acbcc7f79303d5cfb6c81dd2942d7b8cc
 X-User-Id: 1
 
 ###

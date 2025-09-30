@@ -40,8 +40,8 @@ export const tasks = pgTable("tasks", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   title: varchar("title", { length: 255 }).notNull(),
-  description: text("description"),
-  status: taskStatusEnum("status").default("pending"),
-  created_at: timestamp("created_at").defaultNow(),
-  updated_at: timestamp("updated_at").defaultNow(),
+  description: text("description").notNull(),
+  status: taskStatusEnum("status").default("pending").notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
 });

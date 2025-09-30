@@ -11,9 +11,16 @@ export const deleteTask: FastifyPluginAsyncZod = async (server) => {
     {
       preHandler: [csrfProtection],
       schema: {
+        tags: ["Tasks_API"],
+        summary: "delete a task",
         params: z.object({
           id: z.string(),
         }),
+        response: {
+          200: z.object({ message: z.string() }),
+          404: z.object({ message: z.string() }),
+          500: z.object({ error: z.string() }),
+        },
       },
     },
     async (request, reply) => {
@@ -27,7 +34,7 @@ export const deleteTask: FastifyPluginAsyncZod = async (server) => {
 
         if (task.length === 0) {
           return reply.status(404).send({
-            error: "No task found",
+            message: "No task found",
           });
         }
 

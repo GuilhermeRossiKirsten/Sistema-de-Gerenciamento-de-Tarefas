@@ -13,6 +13,8 @@ export const updateTask: FastifyPluginAsyncZod = async (server) => {
     {
       preHandler: [csrfProtection],
       schema: {
+        tags: ["Tasks_API"],
+        summary: "Update a task",
         params: z.object({
           id: z.string(),
         }),
@@ -21,6 +23,13 @@ export const updateTask: FastifyPluginAsyncZod = async (server) => {
           description: z.string().optional(),
           status: z.enum(TaskStatus).optional(),
         }),
+        response: {
+          200: z.object({
+            message: z.string(),
+          }),
+          404: z.object({ message: z.string() }),
+          500: z.object({ error: z.string() }),
+        },
       },
     },
     async (request, reply) => {
@@ -52,7 +61,7 @@ export const updateTask: FastifyPluginAsyncZod = async (server) => {
           .send({ message: "Task updated successfully." });
       } catch (error) {
         console.error(error);
-        return reply.status(500).send({ message: "Internal Server Error." });
+        return reply.status(500).send({ error: "Internal Server Error." });
       }
     }
   );

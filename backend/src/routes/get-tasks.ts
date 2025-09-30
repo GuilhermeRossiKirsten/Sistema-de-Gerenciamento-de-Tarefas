@@ -11,9 +11,28 @@ export const getTasks: FastifyPluginAsyncZod = async (server) => {
     {
       preHandler: [csrfProtection],
       schema: {
+        tags: ["Tasks_API"],
+        summary: "Get all tasks or by user_id",
         querystring: z.object({
           user_id: z.string().optional(),
         }),
+        response: {
+          200: z.object({
+            tasks: z.array(
+              z.object({
+                id: z.number(),
+                user_id: z.number(),
+                title: z.string(),
+                description: z.string(),
+                status: z.string(),
+                created_at: z.date(),
+                updated_at: z.date(),
+              })
+            ),
+            total: z.number(),
+          }),
+          500: z.object({ error: z.string() }),
+        },
       },
     },
     async (request, reply) => {
@@ -25,7 +44,7 @@ export const getTasks: FastifyPluginAsyncZod = async (server) => {
         conditions.push(eq(tasks.user_id, Number(user_id))); // número
       }
       try {
-        const [result, total] = await await Promise.all([
+        const [result, total] = await Promise.all([
           db
             .select()
             .from(tasks)

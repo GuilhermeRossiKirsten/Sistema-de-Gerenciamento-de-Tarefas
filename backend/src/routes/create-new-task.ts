@@ -13,12 +13,20 @@ export const createNewTask: FastifyPluginAsyncZod = async (server) => {
     {
       preHandler: [csrfProtection],
       schema: {
+        tags: ["Tasks_API"],
+        summary: "Create new task",
         body: z.object({
           user_id: z.number(),
           title: z.string(),
           description: z.string(),
           status: z.enum(TaskStatus),
         }),
+        response: {
+          201: z.object({ message: z.string() }),
+          400: z.object({ error: z.string() }),
+          409: z.object({ error: z.string() }),
+          500: z.object({ error: z.string() }),
+        },
       },
     },
     async (request, reply) => {
