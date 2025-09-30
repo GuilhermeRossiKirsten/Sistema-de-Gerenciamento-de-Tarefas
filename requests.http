@@ -1,0 +1,35 @@
+GET http://localhost:3000/
+
+###
+GET http://localhost:3000/tasks
+
+###
+
+GET http://localhost:3000/tasks?user_id=2
+
+
+###
+POST http://localhost:3000/task
+Content-Type: application/json
+
+{
+    "user_id": 1,
+    "title": "teste2",
+    "description": "teste do teste2",
+    "status": "pending"
+}
+
+###
+
+DELETE http://localhost:3000/task/13
+
+
+###
+PUT http://localhost:3000/task/14
+Content-Type: application/json
+
+{
+    "title": "teste de update",
+    "description": "teste do teste de update",
+    "status": "completed"
+}
