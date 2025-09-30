@@ -2,9 +2,10 @@
   "name": "sistema-de-gerenciamento-de-tarefas",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.ts",
   "scripts": {
-    "start": "node --watch server.ts"
+    "preinstall": "node ./infra/scripts/check-node-version.js",
+    "start": "node --watch src/server.ts"
   },
   "keywords": [],
   "author": "",
