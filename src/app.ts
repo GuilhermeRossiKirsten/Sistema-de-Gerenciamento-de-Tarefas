@@ -3,12 +3,15 @@ import {
   validatorCompiler,
   serializerCompiler,
   type ZodTypeProvider,
+  jsonSchemaTransform,
 } from "fastify-type-provider-zod";
 
 import { createNewTask } from "./routes/create-new-task.ts";
 import { getTasks } from "./routes/get-tasks.ts";
 import { deleteTask } from "./routes/delete-task.ts";
 import { updateTask } from "./routes/update-task.ts";
+import fastifySwagger from "@fastify/swagger";
+import fastifySwaggerUi from "@fastify/swagger-ui";
 
 const server = fastify({
   logger: {
@@ -27,6 +30,18 @@ const server = fastify({
     },
   },
 }).withTypeProvider<ZodTypeProvider>();
+
+server.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: "Tasks API",
+      version: "1.0.0",
+    },
+  },
+  transform: jsonSchemaTransform,
+});
+
+server.register(fastifySwaggerUi, { routePrefix: "/docs" });
 
 server.setValidatorCompiler(validatorCompiler);
 server.setSerializerCompiler(serializerCompiler);

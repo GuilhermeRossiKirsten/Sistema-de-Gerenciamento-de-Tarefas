@@ -2,12 +2,14 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { db } from "../../infra/database/client.ts";
 import { z } from "zod";
 import { tasks } from "../../infra/database/schemas.ts";
-import { eq, and, type SQL } from "drizzle-orm";
+import { eq } from "drizzle-orm";
+import { csrfProtection } from "../hooks/check-csrf.ts";
 
 export const deleteTask: FastifyPluginAsyncZod = async (server) => {
   server.delete(
     "/task/:id",
     {
+      preHandler: [csrfProtection],
       schema: {
         params: z.object({
           id: z.string(),
@@ -17,16 +19,18 @@ export const deleteTask: FastifyPluginAsyncZod = async (server) => {
     async (request, reply) => {
       const { id } = request.params;
 
-        try {
-          
-        const task = await db.select().from(tasks).where(eq(tasks.id, Number(id)));
+      try {
+        const task = await db
+          .select()
+          .from(tasks)
+          .where(eq(tasks.id, Number(id)));
 
         if (task.length === 0) {
           return reply.status(404).send({
             error: "No task found",
           });
         }
-            
+
         await db.delete(tasks).where(eq(tasks.id, Number(id)));
 
         return reply

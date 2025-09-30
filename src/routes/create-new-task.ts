@@ -3,6 +3,7 @@ import { db } from "../../infra/database/client.ts";
 import { z } from "zod";
 import { tasks } from "../../infra/database/schemas.ts";
 import { eq, and } from "drizzle-orm";
+import { csrfProtection } from "../hooks/check-csrf.ts";
 
 const TaskStatus = ["pending", "in_progress", "completed"] as const;
 
@@ -10,6 +11,7 @@ export const createNewTask: FastifyPluginAsyncZod = async (server) => {
   server.post(
     "/task",
     {
+      preHandler: [csrfProtection],
       schema: {
         body: z.object({
           user_id: z.number(),
