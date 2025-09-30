@@ -5,12 +5,14 @@
   "main": "server.ts",
   "scripts": {
     "preinstall": "node ./infra/scripts/check-node-version.js",
-    "start": "node --watch src/server.ts"
+    "prestart": "node --env-file .env ./infra/scripts/check-envs.js",
+    "start": "node --env-file .env --watch src/server.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "drizzle-orm": "^0.44.5",
     "fastify": "^5.6.1",
     "pino-pretty": "^13.1.1"
   },
