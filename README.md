@@ -50,8 +50,9 @@ Cada usuário possui um token válido por 5 minutos
 
 Necessário enviar nos headers:
 
-X-CSRF-Token: <token>
-X-User-Id: <id>
+`X-CSRF-Token: <token>`
+
+`X-User-Id: <id>`
 
 O servidor disponibiliza todos os endpoints da API para comunicação com o frontend.
 
