@@ -32,6 +32,7 @@ https://sistema-de-gerenciamento-de-tarefas-wkf7.onrender.com/docs
 
 #### Endpoints principais:
 
+```js
 GET    /tasks          → Lista tarefas 
 
 POST   /task           → Cria nova tarefa
@@ -41,6 +42,7 @@ PATCH  /task/:id       → Atualiza tarefa
 DELETE /task/:id       → Remove tarefa
 
 GET    /csrf-token/:id → Obtém token CSRF
+```
 
 
 
