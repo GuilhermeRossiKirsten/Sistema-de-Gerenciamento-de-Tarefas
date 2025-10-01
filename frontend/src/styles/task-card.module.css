@@ -107,11 +107,6 @@
   color: #374151;
 }
 
-.button:hover:not(:disabled) {
-  background: #f9fafb;
-  border-color: #9ca3af;
-}
-
 .button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
