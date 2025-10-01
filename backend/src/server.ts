@@ -5,7 +5,7 @@ import { z } from "zod";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { csrf_tokens } from "../infra/database/schemas.ts";
 import { desc, and, eq } from "drizzle-orm";
-
+import fastifyCors from "@fastify/cors";
 
 // -------------------------
 // GET /csrf-token/:user_id
@@ -55,7 +55,6 @@ server.get(
         }
       }
 
-
       // Gerar novo token
       const token = crypto.randomBytes(32).toString("hex");
 
@@ -72,9 +71,11 @@ server.get(
   }
 );
 
+await server.register(fastifyCors, { origin: true });
+
 server
-  .listen({ port: 3000, host: "0.0.0.0" })
-  .then(() => console.log("Server on 3000."))
+  .listen({ port: 3001, host: "0.0.0.0" })
+  .then(() => console.log("Server on 3001."))
   .catch((err) => {
     console.error(err);
     process.exit(1);
