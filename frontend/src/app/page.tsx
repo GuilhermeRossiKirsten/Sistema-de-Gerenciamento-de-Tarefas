@@ -1,132 +1,125 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { CreateTaskForm } from "@/components/create-task-form";
-import { TaskCard } from "@/components/task-card";
-import { Toast } from "@/components/toast";
-import {
-  getTasks,
-  createTask,
-  updateTask,
-  deleteTask,
-  generateCsrfToken,
-} from "@/lib/api";
-import type { Task, CreateTaskRequest, UpdateTaskRequest } from "@/lib/types";
-import styles from "@/styles/app.module.css";
-import sharedStyles from "@/styles/shared.module.css";
+import { useEffect, useState } from "react"
+import { CreateTaskForm } from "@/components/create-task-form"
+import { TaskCard } from "@/components/task-card"
+import { Toast } from "@/components/toast"
+import { getTasks, createTask, updateTask, deleteTask, generateCsrfToken, setCurrentUserId } from "@/lib/api"
+import type { Task, CreateTaskRequest, UpdateTaskRequest } from "@/lib/types"
+import styles from "@/styles/app.module.css"
+import sharedStyles from "@/styles/shared.module.css"
 
 interface ToastState {
-  message: string;
-  type: "success" | "error";
+  message: string
+  type: "success" | "error"
 }
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [userIdFilter, setUserIdFilter] = useState("");
-  const [toast, setToast] = useState<ToastState | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [userIdFilter, setUserIdFilter] = useState("")
+  const [toast, setToast] = useState<ToastState | null>(null)
 
-  const [csrfUserId, setCsrfUserId] = useState("");
-  const [isGeneratingToken, setIsGeneratingToken] = useState(false);
-  const [hasToken, setHasToken] = useState(false);
+  const [csrfUserId, setCsrfUserId] = useState("")
+  const [isGeneratingToken, setIsGeneratingToken] = useState(false)
+  const [hasToken, setHasToken] = useState(false)
+
+  const [currentUserId, setCurrentUserIdState] = useState("1")
 
   const showToast = (message: string, type: "success" | "error") => {
-    setToast({ message, type });
-  };
-
-  const handleGenerateToken = async () => {
-    if (!csrfUserId) {
-      showToast("Please enter a User ID", "error");
-      return;
-    }
-
-    setIsGeneratingToken(true);
-    try {
-      await generateCsrfToken(Number.parseInt(csrfUserId));
-      setHasToken(true);
-      showToast("CSRF token generated successfully", "success");
-    } catch (error) {
-      showToast("Failed to generate CSRF token", "error");
-      setHasToken(false);
-    } finally {
-      setIsGeneratingToken(false);
-    }
-  };
-
-  const loadTasks = async () => {
-    setIsLoading(true);
-    try {
-      const userId = userIdFilter ? Number.parseInt(userIdFilter) : undefined;
-      const response = await getTasks(userId);
-      setTasks(response.tasks);
-      setFilteredTasks(response.tasks);
-    } catch (error) {
-      showToast("Failed to load tasks", "error");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    setToast({ message, type })
+  }
 
   useEffect(() => {
-    loadTasks();
-  }, [userIdFilter]);
+    if (currentUserId) {
+      setCurrentUserId(Number.parseInt(currentUserId))
+    }
+  }, [currentUserId])
+
+  useEffect(() => {
+    loadTasks()
+  }, [userIdFilter])
 
   useEffect(() => {
     if (searchQuery) {
       const filtered = tasks.filter(
         (task) =>
           task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          task.description.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredTasks(filtered);
+          task.description.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+      setFilteredTasks(filtered)
     } else {
-      setFilteredTasks(tasks);
+      setFilteredTasks(tasks)
     }
-  }, [searchQuery, tasks]);
+  }, [searchQuery, tasks])
 
   const handleCreateTask = async (taskData: CreateTaskRequest) => {
     try {
-      await createTask(taskData);
-      showToast("Task created successfully", "success");
-      await loadTasks();
+      await createTask(taskData)
+      showToast("Task created successfully", "success")
+      await loadTasks()
     } catch (error) {
-      showToast(
-        error instanceof Error ? error.message : "Failed to create task",
-        "error"
-      );
-      throw error;
+      showToast(error instanceof Error ? error.message : "Failed to create task", "error")
+      throw error
     }
-  };
+  }
 
   const handleUpdateTask = async (id: number, updates: UpdateTaskRequest) => {
     try {
-      await updateTask(id, updates);
-      showToast("Task updated successfully", "success");
-      await loadTasks();
+      await updateTask(id, updates)
+      showToast("Task updated successfully", "success")
+      await loadTasks()
     } catch (error) {
-      showToast(
-        error instanceof Error ? error.message : "Failed to update task",
-        "error"
-      );
-      throw error;
+      showToast(error instanceof Error ? error.message : "Failed to update task", "error")
+      throw error
     }
-  };
+  }
 
   const handleDeleteTask = async (id: number) => {
     try {
-      await deleteTask(id);
-      showToast("Task deleted successfully", "success");
-      await loadTasks();
+      await deleteTask(id)
+      showToast("Task deleted successfully", "success")
+      await loadTasks()
     } catch (error) {
-      showToast(
-        error instanceof Error ? error.message : "Failed to delete task",
-        "error"
-      );
-      throw error;
+      showToast(error instanceof Error ? error.message : "Failed to delete task", "error")
+      throw error
     }
-  };
+  }
+
+  const loadTasks = async () => {
+    setIsLoading(true)
+    try {
+      const userId = userIdFilter ? Number.parseInt(userIdFilter) : undefined
+      const response = await getTasks(userId)
+      setTasks(response.tasks)
+      setFilteredTasks(response.tasks)
+    } catch (error) {
+      showToast("Failed to load tasks", "error")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleGenerateToken = async () => {
+    if (!csrfUserId) {
+      showToast("Please enter a User ID", "error")
+      return
+    }
+
+    setIsGeneratingToken(true)
+    try {
+      await generateCsrfToken(Number.parseInt(csrfUserId))
+      setHasToken(true)
+      showToast("CSRF token generated successfully", "success")
+    } catch (error) {
+      showToast("Failed to generate CSRF token", "error")
+      setHasToken(false)
+    } finally {
+      setIsGeneratingToken(false)
+    }
+  }
 
   return (
     <div className={styles.container}>
@@ -137,9 +130,29 @@ export default function TasksPage() {
             <div className={styles.headerIcon}>📋</div>
             <h1>Task Manager</h1>
           </div>
-          <p className={styles.headerSubtitle}>
-            Organize and track your tasks efficiently
-          </p>
+          <p className={styles.headerSubtitle}>Organize and track your tasks efficiently</p>
+        </div>
+
+        <div className={styles.currentUserSection}>
+          <div className={styles.currentUserTitle}>
+            <span>👤</span>
+            <span>Current User</span>
+          </div>
+          <div className={styles.currentUserForm}>
+            <input
+              type="number"
+              placeholder="Enter User ID"
+              value={currentUserId}
+              onChange={(e) => setCurrentUserIdState(e.target.value)}
+              className={sharedStyles.input}
+              style={{ flex: 1, maxWidth: "200px" }}
+              min="1"
+            />
+            <div className={styles.currentUserInfo}>
+              <span className={styles.currentUserInfoIcon}>ℹ️</span>
+              <span>This user will be used for creating new tasks</span>
+            </div>
+          </div>
         </div>
 
         <div className={styles.csrfSection}>
@@ -168,20 +181,10 @@ export default function TasksPage() {
               </button>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.75rem",
-                width: "100%",
-              }}
-            >
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", width: "100%" }}>
               <div className={styles.csrfWarning}>
                 <span className={styles.csrfWarningIcon}>⚠️</span>
-                <span>
-                  CSRF token expires in 5 minutes. Generate a new token if
-                  operations fail.
-                </span>
+                <span>CSRF token expires in 5 minutes. Generate a new token if operations fail.</span>
               </div>
 
               {hasToken && (
@@ -194,8 +197,7 @@ export default function TasksPage() {
           </div>
         </div>
 
-        {/* Create Task Form */}
-        <CreateTaskForm onSubmit={handleCreateTask} />
+        <CreateTaskForm onSubmit={handleCreateTask} defaultUserId={currentUserId} />
 
         {/* Filters and Search */}
         <div className={styles.filtersSection}>
@@ -218,17 +220,8 @@ export default function TasksPage() {
               className={sharedStyles.input}
               style={{ width: "160px" }}
             />
-            <button
-              onClick={loadTasks}
-              className={`${sharedStyles.button} ${sharedStyles.iconButton}`}
-            >
-              <span
-                style={{
-                  animation: isLoading ? "spin 1s linear infinite" : "none",
-                }}
-              >
-                🔄
-              </span>
+            <button onClick={loadTasks} className={`${sharedStyles.button} ${sharedStyles.iconButton}`}>
+              <span style={{ animation: isLoading ? "spin 1s linear infinite" : "none" }}>🔄</span>
             </button>
           </div>
         </div>
@@ -236,9 +229,7 @@ export default function TasksPage() {
         {/* Tasks List */}
         <div>
           <div className={styles.tasksHeader}>
-            <h2>
-              Tasks {filteredTasks.length > 0 && `(${filteredTasks.length})`}
-            </h2>
+            <h2>Tasks {filteredTasks.length > 0 && `(${filteredTasks.length})`}</h2>
           </div>
 
           {isLoading ? (
@@ -251,20 +242,13 @@ export default function TasksPage() {
               <div className={styles.emptyIcon}>📋</div>
               <p className={styles.emptyTitle}>No tasks found</p>
               <p className={styles.emptyDescription}>
-                {searchQuery || userIdFilter
-                  ? "Try adjusting your filters"
-                  : "Create your first task to get started"}
+                {searchQuery || userIdFilter ? "Try adjusting your filters" : "Create your first task to get started"}
               </p>
             </div>
           ) : (
             <div className={styles.tasksGrid}>
               {filteredTasks.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  onUpdate={handleUpdateTask}
-                  onDelete={handleDeleteTask}
-                />
+                <TaskCard key={task.id} task={task} onUpdate={handleUpdateTask} onDelete={handleDeleteTask} />
               ))}
             </div>
           )}
@@ -272,21 +256,13 @@ export default function TasksPage() {
       </div>
 
       {/* Toast Notification */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       <style jsx global>{`
         @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
+          to { transform: rotate(360deg); }
         }
       `}</style>
     </div>
-  );
+  )
 }

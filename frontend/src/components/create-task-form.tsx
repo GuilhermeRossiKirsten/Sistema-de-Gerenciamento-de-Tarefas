@@ -1,29 +1,36 @@
-"use client";
+"use client"
 
-import type React from "react";
-import { useState } from "react";
-import type { TaskStatus } from "@/lib/types";
-import styles from "@/styles/form.module.css";
+import type React from "react"
+import { useState, useEffect } from "react"
+import type { TaskStatus } from "@/lib/types"
+import styles from "@/styles/form.module.css"
 
 interface CreateTaskFormProps {
   onSubmit: (task: {
-    user_id: number;
-    title: string;
-    description: string;
-    status: TaskStatus;
-  }) => Promise<void>;
+    user_id: number
+    title: string
+    description: string
+    status: TaskStatus
+  }) => Promise<void>
+  defaultUserId?: string
 }
 
-export function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
-  const [userId, setUserId] = useState("1");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState<TaskStatus>("pending");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export function CreateTaskForm({ onSubmit, defaultUserId }: CreateTaskFormProps) {
+  const [userId, setUserId] = useState(defaultUserId || "1")
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [status, setStatus] = useState<TaskStatus>("pending")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (defaultUserId) {
+      setUserId(defaultUserId)
+    }
+  }, [defaultUserId])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+    e.preventDefault()
+    setIsSubmitting(true)
 
     try {
       await onSubmit({
@@ -31,16 +38,16 @@ export function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
         title,
         description,
         status,
-      });
-      setTitle("");
-      setDescription("");
-      setStatus("pending");
+      })
+      setTitle("")
+      setDescription("")
+      setStatus("pending")
     } catch (error) {
-      console.error("Failed to create task:", error);
+      console.error("Failed to create task:", error)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className={styles.card}>
@@ -111,16 +118,12 @@ export function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
               className={styles.textarea}
             />
           </div>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={styles.button}
-          >
+          <button type="submit" disabled={isSubmitting} className={styles.button}>
             <span>➕</span>
             {isSubmitting ? "Creating..." : "Create Task"}
           </button>
         </form>
       </div>
     </div>
-  );
+  )
 }

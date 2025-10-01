@@ -5,7 +5,6 @@ import { z } from "zod";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { csrf_tokens } from "../infra/database/schemas.ts";
 import { desc, and, eq } from "drizzle-orm";
-import fastifyCors from "@fastify/cors";
 
 // -------------------------
 // GET /csrf-token/:user_id
@@ -70,8 +69,6 @@ server.get(
     }
   }
 );
-
-await server.register(fastifyCors, { origin: true });
 
 server
   .listen({ port: 3001, host: "0.0.0.0" })
